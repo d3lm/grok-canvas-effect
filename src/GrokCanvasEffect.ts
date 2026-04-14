@@ -113,12 +113,16 @@ export class GrokCanvasEffect {
     }
 
     this.#logoRatio = LOGO_RATIO;
-    this.resize();
+    this.#resize();
 
     const loadedTextures = await Promise.all([
       loadTexture(this.#gl, NOISE_TEXTURE_PATH, { repeat: true }),
       ...LOGO_TEXTURE_PATHS.map((sourcePath) => loadTexture(this.#gl, sourcePath)),
     ]);
+
+    if (this.#destroyed) {
+      return;
+    }
 
     const [noiseTexture, ...logoTextures] = loadedTextures;
 
@@ -139,11 +143,61 @@ export class GrokCanvasEffect {
     this.#startLoop();
   }
 
+  async initWithRawTexture(pixels: Uint8Array, width: number, height: number, logoRatio: number): Promise<void> {
+    if (this.#destroyed || this.#running) {
+      return;
+    }
+
+    this.#logoRatio = Math.max(0.25, logoRatio);
+
+    this.#resize();
+
+    this.#noiseTexture = await loadTexture(this.#gl, NOISE_TEXTURE_PATH, { repeat: true });
+
+    if (this.#destroyed) {
+      return;
+    }
+
+    for (const path of LOGO_TEXTURE_PATHS) {
+      const texture = this.#gl.createTexture();
+
+      if (!texture) {
+        throw new Error(`Unable to create texture for "${path}".`);
+      }
+
+      this.#gl.bindTexture(this.#gl.TEXTURE_2D, texture);
+
+      this.#gl.texImage2D(
+        this.#gl.TEXTURE_2D,
+        0,
+        this.#gl.RGBA,
+        width,
+        height,
+        0,
+        this.#gl.RGBA,
+        this.#gl.UNSIGNED_BYTE,
+        pixels,
+      );
+
+      this.#gl.texParameteri(this.#gl.TEXTURE_2D, this.#gl.TEXTURE_MIN_FILTER, this.#gl.LINEAR);
+      this.#gl.texParameteri(this.#gl.TEXTURE_2D, this.#gl.TEXTURE_MAG_FILTER, this.#gl.LINEAR);
+      this.#gl.texParameteri(this.#gl.TEXTURE_2D, this.#gl.TEXTURE_WRAP_S, this.#gl.CLAMP_TO_EDGE);
+      this.#gl.texParameteri(this.#gl.TEXTURE_2D, this.#gl.TEXTURE_WRAP_T, this.#gl.CLAMP_TO_EDGE);
+
+      this.#logoTextures.set(path, texture);
+    }
+
+    this.#currentLogoPath = getLogoTexturePath(this.#canvas.width);
+
+    this.#startLoop();
+  }
+
   #startLoop(): void {
-    this.resetTrailBuffers();
-    this.attachEvents();
+    this.#resetTrailBuffers();
+    this.#attachEvents();
 
     const now = performance.now();
+
     this.#fpsTime = now;
     this.#adaptTime = now;
     this.#frameCount = 0;
@@ -165,7 +219,7 @@ export class GrokCanvasEffect {
       this.#animationFrameId = 0;
     }
 
-    this.detachEvents();
+    this.#detachEvents();
 
     this.#gl.deleteBuffer(this.#quadBuffer);
     this.#gl.deleteProgram(this.#mainProgram);
@@ -205,7 +259,7 @@ export class GrokCanvasEffect {
     this.#deltaTime = this.#lastTime > 0 ? Math.min((timestamp - this.#lastTime) * 0.001, 0.05) : 0.0167;
     this.#lastTime = timestamp;
 
-    this.updateQuality(timestamp);
+    this.#updateQuality(timestamp);
 
     const mouseVelocity: Vec2 = [
       this.#mousePosition[0] - this.#previousMousePosition[0],
@@ -219,20 +273,20 @@ export class GrokCanvasEffect {
     const previousTarget = this.#renderTargets[this.#pingPongIndex];
     const nextTarget = this.#renderTargets[nextIndex];
 
-    this.drawTrailPass(nextTarget, previousTarget.texture, noiseTexture, logoTexture, time, mouseVelocity);
-    this.drawMainPass(nextTarget.texture, noiseTexture, logoTexture, time);
+    this.#drawTrailPass(nextTarget, previousTarget.texture, noiseTexture, logoTexture, time, mouseVelocity);
+    this.#drawMainPass(nextTarget.texture, noiseTexture, logoTexture, time);
 
     this.#pingPongIndex = nextIndex;
   };
 
-  private attachEvents(): void {
+  #attachEvents(): void {
     window.addEventListener('resize', this.#handleResize);
     window.addEventListener('mousemove', this.#handleMouseMove, { passive: true });
     window.addEventListener('touchmove', this.#handleTouchMove, { passive: true });
     document.addEventListener('visibilitychange', this.#handleVisibilityChange);
   }
 
-  private detachEvents(): void {
+  #detachEvents(): void {
     window.removeEventListener('resize', this.#handleResize);
     window.removeEventListener('mousemove', this.#handleMouseMove);
     window.removeEventListener('touchmove', this.#handleTouchMove);
@@ -240,27 +294,29 @@ export class GrokCanvasEffect {
   }
 
   readonly #handleResize = (): void => {
-    this.resize();
+    this.#resize();
   };
 
   readonly #handleMouseMove = (event: MouseEvent): void => {
-    this.updateMousePosition(event.clientX, event.clientY);
+    this.#updateMousePosition(event.clientX, event.clientY);
   };
 
   readonly #handleTouchMove = (event: TouchEvent): void => {
     const [touch] = event.touches;
 
     if (touch) {
-      this.updateMousePosition(touch.clientX, touch.clientY);
+      this.#updateMousePosition(touch.clientX, touch.clientY);
     }
   };
 
   readonly #handleVisibilityChange = (): void => {
     if (!document.hidden) {
       const now = performance.now();
+
       this.#lastTime = 0;
       this.#fpsTime = now;
       this.#adaptTime = now;
+
       return;
     }
 
@@ -268,7 +324,7 @@ export class GrokCanvasEffect {
     this.#fpsTime = 0;
   };
 
-  private updateMousePosition(clientX: number, clientY: number): void {
+  #updateMousePosition(clientX: number, clientY: number): void {
     const bounds = this.#canvas.getBoundingClientRect();
 
     if (!bounds.width || !bounds.height) {
@@ -278,7 +334,7 @@ export class GrokCanvasEffect {
     this.#mousePosition = [(clientX - bounds.left) / bounds.width, 1 - (clientY - bounds.top) / bounds.height];
   }
 
-  private updateQuality(timestamp: number): void {
+  #updateQuality(timestamp: number): void {
     this.#frameCount += 1;
 
     if (timestamp - this.#fpsTime < 1000) {
@@ -303,13 +359,13 @@ export class GrokCanvasEffect {
 
     if (nextScale !== this.#qualityScale) {
       this.#qualityScale = nextScale;
-      this.resize();
+      this.#resize();
     }
 
     this.#adaptTime = timestamp;
   }
 
-  private resize(): void {
+  #resize(): void {
     const width = Math.max(1, this.#canvas.clientWidth);
     const height = Math.max(1, this.#canvas.clientHeight);
 
@@ -322,16 +378,16 @@ export class GrokCanvasEffect {
 
     this.#currentLogoPath = getLogoTexturePath(width);
 
-    this.updateLayoutUniforms();
+    this.#updateLayoutUniforms();
 
     this.#gl.viewport(0, 0, width, height);
 
     if (this.#noiseTexture) {
-      this.resetTrailBuffers();
+      this.#resetTrailBuffers();
     }
   }
 
-  private updateLayoutUniforms(): void {
+  #updateLayoutUniforms(): void {
     const logoHeight = this.#canvas.height * LOGO_LAYOUT.heightRatio;
     const logoWidth = logoHeight * this.#logoRatio;
     const rightGap = Math.max((this.#canvas.width - logoWidth) / 2, 0);
@@ -350,7 +406,7 @@ export class GrokCanvasEffect {
     this.#gl.uniform1f(this.#trailUniforms.logoRatio, this.#logoRatio);
   }
 
-  private resetTrailBuffers(): void {
+  #resetTrailBuffers(): void {
     const previousFramebuffer = this.#gl.getParameter(this.#gl.FRAMEBUFFER_BINDING) as WebGLFramebuffer | null;
 
     for (const renderTarget of this.#renderTargets) {
@@ -364,7 +420,7 @@ export class GrokCanvasEffect {
     this.#gl.viewport(0, 0, this.#canvas.width, this.#canvas.height);
   }
 
-  private drawTrailPass(
+  #drawTrailPass(
     nextTarget: RenderTarget,
     previousFrameTexture: WebGLTexture,
     noiseTexture: WebGLTexture,
@@ -397,12 +453,7 @@ export class GrokCanvasEffect {
     this.#gl.drawArrays(this.#gl.TRIANGLE_STRIP, 0, 4);
   }
 
-  private drawMainPass(
-    trailTexture: WebGLTexture,
-    noiseTexture: WebGLTexture,
-    logoTexture: WebGLTexture,
-    time: number,
-  ): void {
+  #drawMainPass(trailTexture: WebGLTexture, noiseTexture: WebGLTexture, logoTexture: WebGLTexture, time: number): void {
     this.#gl.bindFramebuffer(this.#gl.FRAMEBUFFER, null);
     this.#gl.viewport(0, 0, this.#canvas.width, this.#canvas.height);
 

@@ -120,7 +120,9 @@ function compileShader(gl: GL, type: number, source: string): WebGLShader {
 
   if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
     const message = gl.getShaderInfoLog(shader) ?? 'Unknown shader compile error.';
+
     gl.deleteShader(shader);
+
     throw new Error(`Shader compile error: ${message}`);
   }
 

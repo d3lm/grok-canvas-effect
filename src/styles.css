@@ -1,44 +1,36 @@
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+@import 'tailwindcss';
 
-html,
-body {
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  background: #000;
-}
+@layer base {
+  *,
+  ::before,
+  ::after {
+    box-sizing: border-box;
+  }
 
-body {
-  font-family:
-    Inter,
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    'Segoe UI',
-    sans-serif;
-  color: #e0e0e0;
-}
+  html,
+  body,
+  #root {
+    width: 100%;
+    height: 100%;
+  }
 
-#root {
-  width: 100%;
-  height: 100%;
-}
+  body {
+    overflow: hidden;
+    background: #000;
+    color: #e0e0e0;
+    font-family:
+      Inter,
+      system-ui,
+      -apple-system,
+      BlinkMacSystemFont,
+      'Segoe UI',
+      sans-serif;
+  }
 
-.demo-canvas {
-  position: fixed;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-}
-
-.app-error {
-  color: #fff;
-  display: grid;
-  min-height: 100vh;
-  place-items: center;
-  text-align: center;
+  button,
+  input,
+  textarea,
+  select {
+    font: inherit;
+  }
 }

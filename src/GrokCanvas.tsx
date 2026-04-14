@@ -33,8 +33,8 @@ export function GrokCanvas() {
   }, []);
 
   if (error) {
-    return <p className="app-error">{error}</p>;
+    return <p className="grid min-h-screen place-items-center px-6 text-center text-white">{error}</p>;
   }
 
-  return <canvas ref={canvasRef} className="demo-canvas" aria-label="Animated WebGL canvas" />;
+  return <canvas ref={canvasRef} className="fixed inset-0 block h-full w-full" aria-label="Animated WebGL canvas" />;
 }
