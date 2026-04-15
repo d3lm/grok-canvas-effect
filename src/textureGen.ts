@@ -71,7 +71,7 @@ export const DEFAULT_GRADIENTS: GradientLine[] = [
 ];
 
 export const DEFAULT_SETTINGS: TextureSettings = {
-  text: 'Grok',
+  text: 'Bolt',
   fontFamily: 'Inter, system-ui, sans-serif',
   fontWeight: 700,
   fontSize: 600,
