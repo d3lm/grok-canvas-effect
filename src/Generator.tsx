@@ -200,259 +200,261 @@ export function Generator() {
 
   return (
     <div className="grid h-screen grid-cols-1 grid-rows-[auto_minmax(0,1fr)] overflow-hidden md:grid-cols-[280px_minmax(0,1fr)] md:grid-rows-1">
-      <aside className="flex flex-col gap-3 overflow-y-auto border-b border-white/5 p-5 md:border-b-0 md:border-r">
-        <h2 className="mb-1 text-[15px] font-semibold text-zinc-200">Texture Generator</h2>
+      <aside className="flex flex-col border-b border-white/10 md:border-b-0 md:border-r">
+        <h2 className="text-[15px] font-semibold text-zinc-200 p-5 border-b border-white/10">Texture Generator</h2>
 
-        <Field label="Text">
-          <TextInput value={settings.text} onChange={(event) => update('text', event.target.value)} />
-        </Field>
+        <div className="flex flex-col gap-3 overflow-y-auto p-5">
+          <Field label="Text">
+            <TextInput value={settings.text} onChange={(event) => update('text', event.target.value)} />
+          </Field>
 
-        <Field
-          label={
-            <span className="inline-flex items-center">
-              Font Family
-              {showLoading && <Loader2 className="ml-1.5 h-3 w-3 animate-spin text-zinc-500" />}
-            </span>
-          }
-        >
-          <TextInput value={settings.fontFamily} onChange={(event) => update('fontFamily', event.target.value)} />
-        </Field>
-
-        <SliderField
-          label="Weight"
-          value={settings.fontWeight}
-          min={100}
-          max={900}
-          step={100}
-          onChange={(value) => update('fontWeight', value)}
-        />
-
-        <SliderField
-          label="Font Size"
-          value={settings.fontSize}
-          min={40}
-          max={600}
-          step={1}
-          onChange={(value) => update('fontSize', value)}
-        />
-
-        <SliderField
-          label="Letter Spacing"
-          value={settings.letterSpacing}
-          min={-20}
-          max={60}
-          step={1}
-          onChange={(value) => update('letterSpacing', value)}
-        />
-
-        <SliderField
-          label="Edge Sharpness"
-          value={settings.edgeSharpness}
-          min={0}
-          max={1}
-          step={0.01}
-          format={(value) => value.toFixed(2)}
-          onChange={(value) => update('edgeSharpness', value)}
-        />
-
-        <SliderField
-          label="Softness"
-          value={settings.softness}
-          min={0}
-          max={1}
-          step={0.01}
-          format={(value) => value.toFixed(2)}
-          onChange={(value) => update('softness', value)}
-        />
-
-        <SliderField
-          label="Direction Strength"
-          value={settings.normalStrength}
-          min={0.005}
-          max={0.6}
-          step={0.005}
-          format={(value) => value.toFixed(3)}
-          onChange={(value) => update('normalStrength', value)}
-        />
-
-        <div className="mt-1 flex flex-col gap-2">
-          <SectionLabel>Blue Blur</SectionLabel>
-          <SliderField
-            label="Inner Blur"
-            value={settings.blueInnerBlur}
-            min={0}
-            max={48}
-            step={1}
-            onChange={(value) => update('blueInnerBlur', value)}
-          />
-          <SliderField
-            label="Outer Blur"
-            value={settings.blueOuterBlur}
-            min={0}
-            max={96}
-            step={1}
-            onChange={(value) => update('blueOuterBlur', value)}
-          />
-        </div>
-
-        <div className="flex items-center justify-between">
-          <SectionLabel>Alpha Gradients</SectionLabel>
-          <button
-            className="grid size-[22px] place-items-center rounded border border-white/10 bg-white/5 text-sm leading-none text-zinc-400 transition hover:bg-white/10 hover:text-white cursor-pointer"
-            onClick={addGradient}
-            title="Add gradient"
-            type="button"
+          <Field
+            label={
+              <span className="inline-flex items-center">
+                Font Family
+                {showLoading && <Loader2 className="ml-1.5 h-3 w-3 animate-spin text-zinc-500" />}
+              </span>
+            }
           >
-            <Plus size={12} />
-          </button>
-        </div>
+            <TextInput value={settings.fontFamily} onChange={(event) => update('fontFamily', event.target.value)} />
+          </Field>
 
-        <div className="flex flex-col gap-1">
-          {settings.gradients.map((_, idx) => (
-            <div
-              key={idx}
-              className={cn(
-                'flex items-center rounded border border-white/10 transition-colors',
-                idx === selectedGradient && 'bg-white/5',
-              )}
-            >
-              <button
-                className={cn(
-                  'flex-1 rounded-l border-0 border-l-[3px] border-transparent bg-transparent px-2 py-1.5 text-left text-xs text-zinc-500 transition-colors hover:text-zinc-300 cursor-pointer',
-                  idx === selectedGradient && 'text-zinc-200',
-                )}
-                onClick={() => setSelectedGradient(idx)}
-                style={{ borderLeftColor: gradientColor(idx) }}
-                type="button"
-              >
-                Gradient {idx + 1}
-              </button>
-              {settings.gradients.length > 1 && (
-                <button
-                  className="grid size-[22px] place-items-center rounded border-0 bg-transparent text-xs text-zinc-700 transition hover:bg-red-500/10 hover:text-red-400 cursor-pointer mr-1"
-                  onClick={() => removeGradient(idx)}
-                  title="Remove gradient"
-                  type="button"
-                >
-                  <X size={10} />
-                </button>
-              )}
-            </div>
-          ))}
-        </div>
+          <SliderField
+            label="Weight"
+            value={settings.fontWeight}
+            min={100}
+            max={900}
+            step={100}
+            onChange={(value) => update('fontWeight', value)}
+          />
 
-        {activeGrad && (
-          <div className="flex flex-col gap-2 border-t border-white/5 pt-2">
+          <SliderField
+            label="Font Size"
+            value={settings.fontSize}
+            min={40}
+            max={600}
+            step={1}
+            onChange={(value) => update('fontSize', value)}
+          />
+
+          <SliderField
+            label="Letter Spacing"
+            value={settings.letterSpacing}
+            min={-20}
+            max={60}
+            step={1}
+            onChange={(value) => update('letterSpacing', value)}
+          />
+
+          <SliderField
+            label="Edge Sharpness"
+            value={settings.edgeSharpness}
+            min={0}
+            max={1}
+            step={0.01}
+            format={(value) => value.toFixed(2)}
+            onChange={(value) => update('edgeSharpness', value)}
+          />
+
+          <SliderField
+            label="Softness"
+            value={settings.softness}
+            min={0}
+            max={1}
+            step={0.01}
+            format={(value) => value.toFixed(2)}
+            onChange={(value) => update('softness', value)}
+          />
+
+          <SliderField
+            label="Direction Strength"
+            value={settings.normalStrength}
+            min={0.005}
+            max={0.6}
+            step={0.005}
+            format={(value) => value.toFixed(3)}
+            onChange={(value) => update('normalStrength', value)}
+          />
+
+          <div className="mt-1 flex flex-col gap-2">
+            <SectionLabel>Blue Blur</SectionLabel>
             <SliderField
-              label="Start Opacity"
-              value={activeGrad.startOpacity}
+              label="Inner Blur"
+              value={settings.blueInnerBlur}
               min={0}
-              max={1}
-              step={0.01}
-              format={(value) => value.toFixed(2)}
-              onChange={(startOpacity) => updateGradient(selectedGradient, { startOpacity })}
+              max={48}
+              step={1}
+              onChange={(value) => update('blueInnerBlur', value)}
             />
             <SliderField
-              label="End Opacity"
-              value={activeGrad.endOpacity}
+              label="Outer Blur"
+              value={settings.blueOuterBlur}
               min={0}
-              max={1}
-              step={0.01}
-              format={(value) => value.toFixed(2)}
-              onChange={(endOpacity) => updateGradient(selectedGradient, { endOpacity })}
-            />
-            <div className="flex items-center gap-1.5">
-              <span className="text-[11px] text-zinc-500 uppercase tracking-[0.05em]">Width Lock</span>
-              <button
-                type="button"
-                className={cn(
-                  'ml-auto flex items-center justify-center size-5 rounded text-[10px] leading-none transition cursor-pointer bg-transparent',
-                  activeGrad.widthLocked ? 'text-white' : 'text-zinc-600 hover:text-zinc-400',
-                )}
-                title={activeGrad.widthLocked ? 'Unlock sides' : 'Lock sides'}
-                onClick={() =>
-                  updateGradient(selectedGradient, {
-                    widthLocked: !activeGrad.widthLocked,
-                    ...(activeGrad.widthLocked ? {} : { widthB: activeGrad.widthA }),
-                  })
-                }
-              >
-                {activeGrad.widthLocked ? <Link2 size={12} /> : <Unlink2 size={12} />}
-              </button>
-            </div>
-            <SliderField
-              label="WA"
-              value={activeGrad.widthA}
-              min={0.01}
-              max={1}
-              step={0.005}
-              format={(value) => value.toFixed(3)}
-              onChange={(widthA) =>
-                updateGradient(selectedGradient, activeGrad.widthLocked ? { widthA, widthB: widthA } : { widthA })
-              }
-            />
-            <SliderField
-              label="WB"
-              value={activeGrad.widthB}
-              min={0.01}
-              max={1}
-              step={0.005}
-              format={(value) => value.toFixed(3)}
-              onChange={(widthB) =>
-                updateGradient(selectedGradient, activeGrad.widthLocked ? { widthA: widthB, widthB } : { widthB })
-              }
-            />
-            <div className="flex items-center gap-1.5">
-              <span className="text-[11px] text-zinc-500 uppercase tracking-[0.05em]">Softness Lock</span>
-              <button
-                type="button"
-                className={cn(
-                  'ml-auto flex items-center justify-center size-5 rounded text-[10px] leading-none transition cursor-pointer bg-transparent',
-                  activeGrad.softnessLocked ? 'text-white' : 'text-zinc-600 hover:text-zinc-400',
-                )}
-                title={activeGrad.softnessLocked ? 'Unlock softness' : 'Lock softness'}
-                onClick={() =>
-                  updateGradient(selectedGradient, {
-                    softnessLocked: !activeGrad.softnessLocked,
-                    ...(activeGrad.softnessLocked ? {} : { softnessB: activeGrad.softnessA }),
-                  })
-                }
-              >
-                {activeGrad.softnessLocked ? <Link2 size={12} /> : <Unlink2 size={12} />}
-              </button>
-            </div>
-            <SliderField
-              label="WA Softness"
-              value={activeGrad.softnessA}
-              min={0}
-              max={1}
-              step={0.01}
-              format={(value) => value.toFixed(2)}
-              onChange={(softnessA) =>
-                updateGradient(
-                  selectedGradient,
-                  activeGrad.softnessLocked ? { softnessA, softnessB: softnessA } : { softnessA },
-                )
-              }
-            />
-            <SliderField
-              label="WB Softness"
-              value={activeGrad.softnessB}
-              min={0}
-              max={1}
-              step={0.01}
-              format={(value) => value.toFixed(2)}
-              onChange={(softnessB) =>
-                updateGradient(
-                  selectedGradient,
-                  activeGrad.softnessLocked ? { softnessA: softnessB, softnessB } : { softnessB },
-                )
-              }
+              max={96}
+              step={1}
+              onChange={(value) => update('blueOuterBlur', value)}
             />
           </div>
-        )}
 
-        <div className="mt-auto flex flex-col gap-1.5 border-t border-white/5 pt-2">
+          <div className="flex items-center justify-between">
+            <SectionLabel>Alpha Gradients</SectionLabel>
+            <button
+              className="grid size-[22px] place-items-center rounded border border-white/10 bg-white/5 text-sm leading-none text-zinc-400 transition hover:bg-white/10 hover:text-white cursor-pointer"
+              onClick={addGradient}
+              title="Add gradient"
+              type="button"
+            >
+              <Plus size={12} />
+            </button>
+          </div>
+
+          <div className="flex flex-col gap-1">
+            {settings.gradients.map((_, idx) => (
+              <div
+                key={idx}
+                className={cn(
+                  'flex items-center rounded border border-white/10 transition-colors',
+                  idx === selectedGradient && 'bg-white/5',
+                )}
+              >
+                <button
+                  className={cn(
+                    'flex-1 rounded-l border-0 border-l-[3px] border-transparent bg-transparent px-2 py-1.5 text-left text-xs text-zinc-500 transition-colors hover:text-zinc-300 cursor-pointer',
+                    idx === selectedGradient && 'text-zinc-200',
+                  )}
+                  onClick={() => setSelectedGradient(idx)}
+                  style={{ borderLeftColor: gradientColor(idx) }}
+                  type="button"
+                >
+                  Gradient {idx + 1}
+                </button>
+                {settings.gradients.length > 1 && (
+                  <button
+                    className="grid size-[22px] place-items-center rounded border-0 bg-transparent text-xs text-zinc-700 transition hover:bg-red-500/10 hover:text-red-400 cursor-pointer mr-1"
+                    onClick={() => removeGradient(idx)}
+                    title="Remove gradient"
+                    type="button"
+                  >
+                    <X size={10} />
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+
+          {activeGrad && (
+            <div className="flex flex-col gap-2 pt-2">
+              <SliderField
+                label="Start Opacity"
+                value={activeGrad.startOpacity}
+                min={0}
+                max={1}
+                step={0.01}
+                format={(value) => value.toFixed(2)}
+                onChange={(startOpacity) => updateGradient(selectedGradient, { startOpacity })}
+              />
+              <SliderField
+                label="End Opacity"
+                value={activeGrad.endOpacity}
+                min={0}
+                max={1}
+                step={0.01}
+                format={(value) => value.toFixed(2)}
+                onChange={(endOpacity) => updateGradient(selectedGradient, { endOpacity })}
+              />
+              <div className="flex items-center gap-1.5">
+                <span className="text-[11px] text-zinc-500 uppercase tracking-[0.05em]">Width Lock</span>
+                <button
+                  type="button"
+                  className={cn(
+                    'ml-auto flex items-center justify-center size-5 rounded text-[10px] leading-none transition cursor-pointer bg-transparent',
+                    activeGrad.widthLocked ? 'text-white' : 'text-zinc-600 hover:text-zinc-400',
+                  )}
+                  title={activeGrad.widthLocked ? 'Unlock sides' : 'Lock sides'}
+                  onClick={() =>
+                    updateGradient(selectedGradient, {
+                      widthLocked: !activeGrad.widthLocked,
+                      ...(activeGrad.widthLocked ? {} : { widthB: activeGrad.widthA }),
+                    })
+                  }
+                >
+                  {activeGrad.widthLocked ? <Link2 size={12} /> : <Unlink2 size={12} />}
+                </button>
+              </div>
+              <SliderField
+                label="WA"
+                value={activeGrad.widthA}
+                min={0.01}
+                max={1}
+                step={0.005}
+                format={(value) => value.toFixed(3)}
+                onChange={(widthA) =>
+                  updateGradient(selectedGradient, activeGrad.widthLocked ? { widthA, widthB: widthA } : { widthA })
+                }
+              />
+              <SliderField
+                label="WB"
+                value={activeGrad.widthB}
+                min={0.01}
+                max={1}
+                step={0.005}
+                format={(value) => value.toFixed(3)}
+                onChange={(widthB) =>
+                  updateGradient(selectedGradient, activeGrad.widthLocked ? { widthA: widthB, widthB } : { widthB })
+                }
+              />
+              <div className="flex items-center gap-1.5">
+                <span className="text-[11px] text-zinc-500 uppercase tracking-[0.05em]">Softness Lock</span>
+                <button
+                  type="button"
+                  className={cn(
+                    'ml-auto flex items-center justify-center size-5 rounded text-[10px] leading-none transition cursor-pointer bg-transparent',
+                    activeGrad.softnessLocked ? 'text-white' : 'text-zinc-600 hover:text-zinc-400',
+                  )}
+                  title={activeGrad.softnessLocked ? 'Unlock softness' : 'Lock softness'}
+                  onClick={() =>
+                    updateGradient(selectedGradient, {
+                      softnessLocked: !activeGrad.softnessLocked,
+                      ...(activeGrad.softnessLocked ? {} : { softnessB: activeGrad.softnessA }),
+                    })
+                  }
+                >
+                  {activeGrad.softnessLocked ? <Link2 size={12} /> : <Unlink2 size={12} />}
+                </button>
+              </div>
+              <SliderField
+                label="WA Softness"
+                value={activeGrad.softnessA}
+                min={0}
+                max={1}
+                step={0.01}
+                format={(value) => value.toFixed(2)}
+                onChange={(softnessA) =>
+                  updateGradient(
+                    selectedGradient,
+                    activeGrad.softnessLocked ? { softnessA, softnessB: softnessA } : { softnessA },
+                  )
+                }
+              />
+              <SliderField
+                label="WB Softness"
+                value={activeGrad.softnessB}
+                min={0}
+                max={1}
+                step={0.01}
+                format={(value) => value.toFixed(2)}
+                onChange={(softnessB) =>
+                  updateGradient(
+                    selectedGradient,
+                    activeGrad.softnessLocked ? { softnessA: softnessB, softnessB } : { softnessB },
+                  )
+                }
+              />
+            </div>
+          )}
+        </div>
+
+        <div className="mt-auto flex flex-col gap-1.5 border-t border-white/10 p-5">
           <PanelButton onClick={handleDownload} disabled={!channels}>
             Download Images
           </PanelButton>
@@ -468,7 +470,7 @@ export function Generator() {
           onValueChange={(value) => setActiveChannel(value as ChannelName)}
           className="flex min-h-0 flex-1 flex-col"
         >
-          <Tabs.List className="flex shrink-0 items-center gap-1 overflow-x-auto border-b border-white/5 bg-linear-to-b from-white/3 to-transparent px-3 py-2">
+          <Tabs.List className="flex shrink-0 items-center gap-1 overflow-x-auto border-b border-white/10 bg-linear-to-b from-white/3 to-transparent px-3 py-2">
             {CHANNEL_META.map((meta) => (
               <ChannelTab key={meta.key} value={meta.key} label={meta.label} title={meta.desc} color={meta.color} />
             ))}
@@ -686,12 +688,12 @@ export function Generator() {
             {showLive && (
               <section
                 className={cn(
-                  'flex flex-col border border-white/10 border-r-0 bg-[#050505]',
+                  'flex flex-col border-l border-white/10 border-r-0 bg-[#050505]',
                   maximizeLive ? 'fixed inset-0 z-200 md:left-[280px]' : 'min-h-0 min-w-0',
                 )}
                 aria-label="Live preview"
               >
-                <div className="flex items-center justify-between border-b border-white/5 bg-linear-to-b from-white/5 to-transparent px-[18px] py-4">
+                <div className="flex items-center justify-between border-b border-white/10 bg-linear-to-b from-white/5 to-transparent px-[18px] py-4">
                   <span className="text-xs font-semibold uppercase tracking-[0.14em] text-zinc-200">Live Preview</span>
                   <div className="flex items-center gap-1">
                     <button
