@@ -51,7 +51,7 @@ export class GrokCanvasEffect {
   readonly #canvas: HTMLCanvasElement;
 
   #noiseTexture: WebGLTexture | null = null;
-  #currentLogoPath: LogoTexturePath = '/logo.png';
+  #currentLogoPath: LogoTexturePath = LOGO_TEXTURE_PATHS[0];
   #logoRatio = LOGO_RATIO;
   #pingPongIndex = 0;
   #qualityScale: number = QUALITY_ADAPTATION.maxScale;
