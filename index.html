@@ -21,7 +21,8 @@
         }
 
         const query = (params.get('q') ?? '').replaceAll('~and~', '&');
-        const restored = `${path}${query ? `?${query}` : ''}${hash}`;
+        const base = location.pathname.replace(/\/$/, '');
+        const restored = `${base}${path}${query ? `?${query}` : ''}${hash}`;
 
         history.replaceState(null, '', restored);
       })();
