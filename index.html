@@ -4,6 +4,28 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1" />
     <title>Grok Canvas Effect</title>
+    <script>
+      // Restore SPA route encoded by 404.html (GitHub Pages SPA redirect)
+      (() => {
+        const { search, hash } = location;
+
+        if (!search) {
+          return;
+        }
+
+        const params = new URLSearchParams(search);
+        const path = params.get('p');
+
+        if (!path) {
+          return;
+        }
+
+        const query = (params.get('q') ?? '').replaceAll('~and~', '&');
+        const restored = `${path}${query ? `?${query}` : ''}${hash}`;
+
+        history.replaceState(null, '', restored);
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
